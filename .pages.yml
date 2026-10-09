@@ -1,0 +1,92 @@
+media:
+  input: public/images/uploads
+  output: /images/uploads
+  categories: [image]
+  rename: safe
+content:
+  - name: journal
+    label: The Journal
+    type: collection
+    path: src/content/blog
+    format: yaml-frontmatter
+    filename: '{primary}.md'
+    exclude: [first-post.md, second-post.md, third-post.md, markdown-style-guide.md, using-mdx.mdx]
+    view:
+      primary: title
+      fields: [title, pubDate]
+      sort: pubDate
+      order: desc
+    fields:
+      - name: title
+        label: Article title
+        type: string
+        required: true
+      - name: description
+        label: Short description
+        type: text
+        required: true
+      - name: pubDate
+        label: Publication date
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: heroImage
+        label: Feature image
+        type: image
+      - name: body
+        label: Article
+        type: rich-text
+        options:
+          format: markdown
+          switcher: false
+  - name: finds
+    label: Curated Finds
+    type: collection
+    path: src/content/products
+    format: json
+    filename: '{primary}.json'
+    view:
+      primary: title
+      fields: [title, category, retailer]
+    fields:
+      - name: title
+        label: Product name
+        type: string
+        required: true
+      - name: description
+        label: Why we chose it
+        type: text
+        required: true
+      - name: image
+        label: Product image
+        type: image
+        required: true
+      - name: imageAlt
+        label: Image description
+        type: string
+        required: true
+      - name: category
+        label: Category
+        type: select
+        required: true
+        options:
+          values: [Furniture, Lighting, Rugs, Decor, Wall Art]
+      - name: retailer
+        label: Retailer
+        type: string
+        required: true
+      - name: affiliateUrl
+        label: Retailer or affiliate link
+        type: string
+        required: true
+        pattern:
+          regex: '^https://[^\s]+$'
+          message: Enter a complete HTTPS link.
+      - name: priceLabel
+        label: Price label (optional)
+        type: string
+      - name: published
+        label: Show on Curated Finds
+        type: boolean
+        default: false
