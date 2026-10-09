@@ -1,4 +1,5 @@
 ---
+import WestmontFooter from '../components/WestmontFooter.astro';
 import Seo from '../components/Seo.astro';
 import type { CollectionEntry } from 'astro:content';
 type Props = CollectionEntry<'blog'>['data'];
@@ -58,7 +59,7 @@ const formatDate = (date: Date) => date.toLocaleDateString('en-US', { month: 'lo
       </article>
       <section class="article-finds"><p class="eyebrow light-text">CHOSEN WITH INTENTION</p><h2>Find the details that<br /><em>bring it home.</em></h2><p>Explore thoughtful furniture, lighting, and finishing touches in Curated Finds.</p><a class="button button-outline" href="/curated-finds/">EXPLORE CURATED FINDS</a></section>
     </main>
-    <footer><div class="footer-top"><a class="brand" href="/">WESTMONT<span>HOME & INTERIORS</span></a><p>Beautiful living, within reach.</p></div><div class="footer-bottom"><span>© {new Date().getFullYear()} WESTMONT. ALL RIGHTS RESERVED.</span><span>INTERIORS · INSPIRATION · INTENTION</span></div></footer>
+    <WestmontFooter />
   </body>
 </html>
 <style is:global>
