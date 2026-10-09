@@ -1,50 +1,45 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+const rooms = [
+  { title: 'Living Spaces', subtitle: 'Spaces to gather', image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1100&q=85' },
+  { title: 'Bedrooms', subtitle: 'A softer place to land', image: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1100&q=85' },
+  { title: 'The Details', subtitle: 'Finishing touches', image: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1100&q=85' },
+];
 ---
-
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to <a href="https://docs.astro.build/"
-					>read the docs
-				</a> or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out <a
-					href="https://github.com/Charca/astro-blog-template"
-					>astro-blog-template
-				</a> by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="WESTMONT — Timeless interiors, attainable luxury, and thoughtful home inspiration." />
+    <meta name="theme-color" content="#f7f5f0" />
+    <title>WESTMONT | Home & Interiors</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="announcement">THE ART OF LIVING BEAUTIFULLY, FOR LESS</div>
+    <header class="header">
+      <a class="brand" href="/" aria-label="Westmont homepage">WESTMONT<span>HOME & INTERIORS</span></a>
+      <nav aria-label="Main navigation"><a href="#philosophy">OUR APPROACH</a><a href="#spaces">EXPLORE SPACES</a><a href="#journal">THE JOURNAL</a></nav>
+      <a class="nav-end" href="#newsletter">THE EDIT <span aria-hidden="true">↗</span></a>
+    </header>
+    <main>
+      <section class="hero" aria-label="Welcome to Westmont">
+        <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2200&q=90" alt="Elegant contemporary interior with warm neutral finishes" fetchpriority="high" />
+        <div class="hero-overlay"></div>
+        <div class="hero-content"><p class="eyebrow light-text">A MORE CONSIDERED HOME</p><h1>Beautiful living.<br /><em>Within reach.</em></h1><p class="hero-description">Timeless interiors, thoughtful details, and elevated finds that make every space feel extraordinary.</p><a class="button button-light" href="#spaces">EXPLORE THE INSPIRATION <span aria-hidden="true">↗</span></a></div>
+        <span class="hero-caption">THE WESTMONT EDIT / 001</span>
+      </section>
+      <section class="intro" id="philosophy"><p class="eyebrow">THE WESTMONT PHILOSOPHY</p><h2>Good design isn't defined<br />by a <em>price tag.</em></h2><p>We believe a home should feel curated, personal, and quietly luxurious. Discover inspiring spaces, enduring design ideas, and attainable pieces chosen with intention.</p><a class="underlined-link" href="#journal">DISCOVER OUR POINT OF VIEW <span aria-hidden="true">↗</span></a></section>
+      <section class="section" id="spaces"><div class="section-heading"><div><p class="eyebrow">A PLACE FOR EVERY DETAIL</p><h2>Explore by <em>space.</em></h2></div><span class="side-label">CURATED INSPIRATION / 01—03</span></div><div class="room-grid">{rooms.map((room, index) => <a class="room-card" href="#journal"><div class="room-image"><img src={room.image} alt={`${room.title} interior inspiration`} loading="lazy" /></div><p class="room-caption">0{index + 1} / {room.subtitle}</p><h3>{room.title}<span aria-hidden="true">↗</span></h3></a>)}</div></section>
+      <section class="statement"><p class="eyebrow light-text">LUXURY IS A FEELING</p><h2>Less about having more.<br /><em>More about living well.</em></h2><p>Layered textures. Natural materials. Pieces with purpose. The most beautiful rooms are the ones that feel like you.</p><a class="button button-outline" href="#journal">EXPLORE THE JOURNAL <span aria-hidden="true">↗</span></a></section>
+      <section class="section journal" id="journal"><div class="section-heading"><div><p class="eyebrow">NOTES FROM WESTMONT</p><h2>The <em>journal.</em></h2></div><span class="side-label">IDEAS WORTH KEEPING</span></div><div class="article-grid"><article><img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85" alt="Refined modern neutral interior" loading="lazy" /><p class="eyebrow">DESIGN NOTES · COMING SOON</p><h3>The art of a timeless, collected home</h3><p>Thoughtful design principles for spaces that feel effortlessly refined.</p></article><article><img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=85" alt="Layered textures and neutral decor" loading="lazy" /><p class="eyebrow">THE AFFORDABLE EDIT · COMING SOON</p><h3>Elevated details, approachable budgets</h3><p>Small changes that make an outsized difference to the way a room feels.</p></article></div></section>
+      <section class="newsletter" id="newsletter"><div><p class="eyebrow">THE WESTMONT LETTER</p><h2>A little more <em>inspiration.</em></h2><p>Our newsletter is coming soon. Until then, discover inspiration for your next home project.</p></div><a class="button button-dark" href="mailto:hello@westmontinteriors.com?subject=Westmont%20inquiry">GET IN TOUCH <span aria-hidden="true">↗</span></a></section>
+    </main>
+    <footer><div class="footer-top"><a class="brand" href="/">WESTMONT<span>HOME & INTERIORS</span></a><p>Beautiful living, within reach.</p></div><div class="footer-bottom"><span>© {new Date().getFullYear()} WESTMONT. ALL RIGHTS RESERVED.</span><span>INTERIORS · INSPIRATION · INTENTION</span></div></footer>
+  </body>
 </html>
+<style is:global>
+:root{font-family:'DM Sans',Arial,sans-serif;color:#292d27;background:#f7f5f0}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0}a{color:inherit;text-decoration:none}img{display:block;width:100%;object-fit:cover}h1,h2,h3,p{margin-top:0}h1,h2,h3{font-weight:400}h1,h2,h3{font-family:'Playfair Display',Georgia,serif}em{font-weight:400}.announcement{background:#30372e;color:#f7f5f0;text-align:center;padding:12px;font-size:9px;letter-spacing:.24em}.header{height:96px;padding:0 6%;display:flex;justify-content:space-between;align-items:center;gap:20px}.brand{display:inline-flex;flex-direction:column;align-items:center;font-family:Georgia,serif;font-size:27px;letter-spacing:.17em;white-space:nowrap;line-height:1}.brand span{font-family:'DM Sans',sans-serif;font-size:8px;letter-spacing:.35em;margin-top:10px}.header nav{display:flex;gap:32px}.header nav a,.nav-end{font-size:10px;letter-spacing:.13em;font-weight:600}.nav-end span{font-size:18px;margin-left:6px}.hero{height:700px;max-height:85vh;min-height:560px;display:flex;align-items:center;position:relative;color:white}.hero>img,.hero-overlay{position:absolute;inset:0;height:100%}.hero-overlay{background:linear-gradient(90deg,rgba(19,23,19,.72),rgba(19,23,19,.13))}.hero-content{position:relative;margin-left:9%;max-width:760px}.eyebrow{font-size:10px;letter-spacing:.23em;font-weight:700;color:#777f70;margin-bottom:22px}.light-text{color:#e5e8df}.hero h1{font-size:clamp(58px,7.5vw,112px);line-height:1.08;letter-spacing:-.045em;margin-bottom:26px}.hero-description{max-width:470px;font-size:15px;line-height:1.9;color:#f0f0e9;margin-bottom:32px}.button{display:inline-flex;justify-content:space-between;align-items:center;gap:38px;padding:20px 26px;font-size:10px;letter-spacing:.14em;font-weight:700}.button span{font-size:18px}.button-light{background:#f7f5f0;color:#292d27}.hero-caption{position:absolute;right:5%;bottom:32px;font-size:10px;letter-spacing:.16em}.intro{padding:115px 20px;text-align:center;max-width:920px;margin:auto}.intro h2,.section-heading h2,.newsletter h2{font-size:clamp(42px,5vw,72px);line-height:1.22;letter-spacing:-.035em}.intro h2{margin-bottom:26px}.intro>p:not(.eyebrow){max-width:630px;margin:0 auto 30px;color:#74796f;font-size:15px;line-height:1.9}.underlined-link{display:inline-flex;align-items:center;gap:25px;border-bottom:1px solid;padding-bottom:10px;font-size:10px;letter-spacing:.12em;font-weight:700}.underlined-link span{font-size:18px}.section{padding:100px 6%;max-width:1500px;margin:auto}.section-heading{display:flex;align-items:end;justify-content:space-between;margin-bottom:38px}.section-heading h2{margin-bottom:0}.side-label{font-size:10px;letter-spacing:.14em;color:#8b9186;padding-bottom:10px}.room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.room-image{overflow:hidden;aspect-ratio:3/4}.room-image img{height:100%;transition:transform .45s}.room-card:hover img{transform:scale(1.045)}.room-caption{color:#84897f;font-size:10px;letter-spacing:.08em;margin:20px 0 9px}.room-card h3{font-size:30px;display:flex;align-items:center;justify-content:space-between}.room-card h3 span{font-family:'DM Sans',sans-serif;font-size:22px}.statement{background:#30372e;color:#fff;text-align:center;padding:130px 20px}.statement h2{font-size:clamp(42px,5vw,74px);line-height:1.24;margin-bottom:28px}.statement>p:not(.eyebrow){max-width:540px;color:#d4d8cf;margin:0 auto 32px;line-height:1.9;font-size:15px}.button-outline{border:1px solid #dfe3db}.article-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}.article-grid article>img{aspect-ratio:1.55;margin-bottom:26px}.article-grid .eyebrow{margin-bottom:14px}.article-grid h3{font-size:31px;margin-bottom:13px}.article-grid article>p:last-child{font-size:14px;color:#757a70;line-height:1.8}.newsletter{background:#e9e9e2;padding:90px 6%;display:flex;justify-content:space-between;align-items:center;gap:35px}.newsletter h2{margin-bottom:16px}.newsletter p:last-child{font-size:14px;color:#72786e;line-height:1.8}.button-dark{background:#30372e;color:white;white-space:nowrap}footer{padding:65px 6% 25px}.footer-top,.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:25px}.footer-top p{font-family:'Playfair Display',serif;font-style:italic;color:#777f72;font-size:20px}.footer-bottom{border-top:1px solid #ddd;margin-top:55px;padding-top:22px;color:#8b9086;font-size:9px;letter-spacing:.14em}@media(max-width:950px){.header nav{display:none}.room-grid{gap:15px}}@media(max-width:650px){.header{height:78px}.brand{font-size:22px}.nav-end{font-size:9px}.hero{height:78vh;min-height:610px}.hero-content{margin:0 7%}.hero h1{font-size:clamp(52px,12vw,78px)}.hero-caption{font-size:8px}.intro{padding:85px 6%}.section{padding:75px 6%}.side-label{display:none}.room-grid,.article-grid{grid-template-columns:1fr;gap:30px}.room-image{aspect-ratio:4/4.3}.statement{padding:95px 7%}.newsletter{padding:75px 7%;display:block}.newsletter .button{margin-top:15px}.footer-top,.footer-bottom{align-items:flex-start;flex-direction:column}.footer-top p{margin-top:18px}.footer-bottom{line-height:1.8}}
+</style>
