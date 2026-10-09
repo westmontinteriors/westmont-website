@@ -1,111 +1,85 @@
 ---
-import BaseHead from '../../components/BaseHead.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
-import FormattedDate from '../../components/FormattedDate.astro';
-
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const starterPosts = new Set(['first-post', 'second-post', 'third-post', 'markdown-style-guide', 'using-mdx']);
+const posts = (await getCollection('blog')).filter(post => !starterPosts.has(post.id)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const upcoming = [
+  { category: 'DESIGN NOTES', title: 'The art of a timeless, collected home', description: 'A thoughtful approach to rooms that feel personal, layered, and quietly refined.', image: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85', alt: 'Warm modern interior with natural materials' },
+  { category: 'THE AFFORDABLE EDIT', title: 'Elevated details, approachable budgets', description: 'Small changes, considered finds, and finishing touches that make a room feel complete.', image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=85', alt: 'Neutral living room with layered textures' },
+  { category: 'ROOM BY ROOM', title: 'A softer place to land', description: 'Warm neutrals and simple layers for a bedroom that feels like a retreat.', image: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1200&q=85', alt: 'Inviting bedroom with neutral bedding' },
+];
 ---
-
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									<img width={720} height={360} src={post.data.heroImage} alt="" />
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-		</main>
-		<Footer />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Design notes, thoughtful rooms, and affordable luxury home inspiration from WESTMONT." />
+    <meta name="theme-color" content="#f7f5f0" />
+    <title>The Journal | WESTMONT Home & Interiors</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="announcement">THE ART OF LIVING BEAUTIFULLY, FOR LESS</div>
+    <header class="header">
+      <a class="brand" href="/" aria-label="Westmont homepage">WESTMONT<span>HOME & INTERIORS</span></a>
+      <nav aria-label="Main navigation"><a href="/#spaces">SPACES</a><a href="/blog/" aria-current="page">THE JOURNAL</a><a href="/#journal">THE EDIT</a><a href="/#philosophy">ABOUT</a></nav>
+      <details class="mobile-menu"><summary aria-label="Open navigation"><span></span><span></span></summary><nav aria-label="Mobile navigation"><a href="/">HOME</a><a href="/#spaces">SPACES</a><a href="/blog/" aria-current="page">THE JOURNAL</a><a href="/#journal">THE EDIT</a><a href="/#philosophy">ABOUT</a></nav></details>
+    </header>
+    <script>
+      const menu = document.querySelector<HTMLDetailsElement>('.mobile-menu');
+      const toggle = menu?.querySelector('summary');
+      if (menu && toggle) {
+        menu.addEventListener('toggle', () => {
+          toggle.setAttribute('aria-label', menu.open ? 'Close navigation' : 'Open navigation');
+        });
+        menu.querySelectorAll('a').forEach((link) => {
+          link.addEventListener('click', () => { menu.open = false; });
+        });
+        document.addEventListener('click', (event) => {
+          if (event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+        });
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && menu.open) {
+            menu.open = false;
+            toggle.focus();
+          }
+        });
+        window.matchMedia('(max-width: 950px)').addEventListener('change', () => {
+          menu.open = false;
+        });
+      }
+    </script>
+    <main class="journal-page">
+      <section class="journal-intro">
+        <p class="eyebrow">NOTES FROM WESTMONT</p>
+        <h1>The <em>journal.</em></h1>
+        <p class="journal-deck">Ideas for a more considered home.</p>
+        <p class="journal-description">Inspiring rooms, enduring design ideas, and attainable finds. A place to discover the details that make everyday living feel a little more extraordinary.</p>
+      </section>
+      <section class="journal-feature" aria-labelledby="feature-title">
+        <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1600&q=85" alt="Living room with warm neutral furnishings and natural textures" fetchpriority="high" />
+        <div class="feature-copy"><p class="eyebrow">THE WESTMONT POINT OF VIEW</p><h2 id="feature-title">Beautiful spaces.<br /><em>Thoughtful choices.</em></h2><p>A luxurious home begins with intention. The proportions, the textures, the pieces you choose to keep. Our journal explores how to bring that feeling home, at a price that feels within reach.</p><a class="underlined-link" href="/#philosophy">OUR APPROACH <span aria-hidden="true">↗</span></a></div>
+      </section>
+      {posts.length > 0 && <section class="journal-stories" aria-labelledby="latest-title"><div class="section-heading"><div><p class="eyebrow">FRESH PERSPECTIVES</p><h2 id="latest-title">Latest <em>stories.</em></h2></div></div><div class="story-grid">{posts.map(post => <article class="story"><a href={`/blog/${post.id}/`}>{post.data.heroImage && <img src={post.data.heroImage} alt={post.data.title} loading="lazy" />}<p class="eyebrow">THE JOURNAL · <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</time></p><h3>{post.data.title}</h3><p>{post.data.description}</p><span class="underlined-link">READ THE STORY <span aria-hidden="true">↗</span></span></a></article>)}</div></section>}
+      <section class="journal-stories" aria-labelledby="upcoming-title"><div class="section-heading"><div><p class="eyebrow">A FIRST LOOK</p><h2 id="upcoming-title">On the <em>horizon.</em></h2></div><span class="side-label">OUR FIRST STORIES ARE COMING SOON</span></div><div class="story-grid">{upcoming.map(story => <article class="story"><img src={story.image} alt={story.alt} loading="lazy" /><p class="eyebrow">{story.category}</p><h3>{story.title}</h3><p>{story.description}</p><span class="coming-soon">COMING SOON</span></article>)}</div></section>
+      <section class="journal-note"><p class="eyebrow light-text">LUXURY IS A FEELING</p><h2>A home that feels like <em>you.</em></h2><p>Less about following every trend. More about finding what belongs.</p><a class="button button-outline" href="/#spaces">EXPLORE THE SPACES <span aria-hidden="true">↗</span></a></section>
+      <section class="newsletter"><div><p class="eyebrow">THE WESTMONT LETTER</p><h2>A little more <em>inspiration.</em></h2><p>Our newsletter is coming soon. In the meantime, we'd love to hear what's inspiring you.</p></div><a class="button button-dark" href="mailto:hello@westmontinteriors.com?subject=Westmont%20inquiry">GET IN TOUCH <span aria-hidden="true">↗</span></a></section>
+    </main>
+    <footer><div class="footer-top"><a class="brand" href="/">WESTMONT<span>HOME & INTERIORS</span></a><p>Beautiful living, within reach.</p></div><div class="footer-bottom"><span>© {new Date().getFullYear()} WESTMONT. ALL RIGHTS RESERVED.</span><span>INTERIORS · INSPIRATION · INTENTION</span></div></footer>
+  </body>
 </html>
+<style is:global>
+:root{font-family:'DM Sans',Arial,sans-serif;color:#292d27;background:#f7f5f0}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0}a{color:inherit;text-decoration:none}img{display:block;width:100%;object-fit:cover}h1,h2,h3,p{margin-top:0}h1,h2,h3{font-weight:400}h1,h2,h3{font-family:'Playfair Display',Georgia,serif}em{font-weight:400}.announcement{background:#30372e;color:#f7f5f0;text-align:center;padding:12px;font-size:9px;letter-spacing:.24em}.header{height:96px;padding:0 6%;display:flex;justify-content:space-between;align-items:center;gap:20px}.brand{display:inline-flex;flex-direction:column;align-items:center;font-family:Georgia,serif;font-size:27px;letter-spacing:.17em;white-space:nowrap;line-height:1}.brand span{font-family:'DM Sans',sans-serif;font-size:8px;letter-spacing:.35em;margin-top:10px}.header nav{display:flex;gap:32px}.header nav a,.nav-end{font-size:10px;letter-spacing:.13em;font-weight:600}.nav-end span{font-size:18px;margin-left:6px}.hero{height:700px;max-height:85vh;min-height:560px;display:flex;align-items:center;position:relative;color:white}.hero>img,.hero-overlay{position:absolute;inset:0;height:100%}.hero-overlay{background:linear-gradient(90deg,rgba(19,23,19,.72),rgba(19,23,19,.13))}.hero-content{position:relative;margin-left:9%;max-width:760px}.eyebrow{font-size:10px;letter-spacing:.23em;font-weight:700;color:#777f70;margin-bottom:22px}.light-text{color:#e5e8df}.hero h1{font-size:clamp(58px,7.5vw,112px);line-height:1.08;letter-spacing:-.045em;margin-bottom:26px}.hero-description{max-width:470px;font-size:15px;line-height:1.9;color:#f0f0e9;margin-bottom:32px}.button{display:inline-flex;justify-content:space-between;align-items:center;gap:38px;padding:20px 26px;font-size:10px;letter-spacing:.14em;font-weight:700}.button span{font-size:18px}.button-light{background:#f7f5f0;color:#292d27}.hero-caption{position:absolute;right:5%;bottom:32px;font-size:10px;letter-spacing:.16em}.intro{padding:115px 20px;text-align:center;max-width:920px;margin:auto}.intro h2,.section-heading h2,.newsletter h2{font-size:clamp(42px,5vw,72px);line-height:1.22;letter-spacing:-.035em}.intro h2{margin-bottom:26px}.intro>p:not(.eyebrow){max-width:630px;margin:0 auto 30px;color:#74796f;font-size:15px;line-height:1.9}.underlined-link{display:inline-flex;align-items:center;gap:25px;border-bottom:1px solid;padding-bottom:10px;font-size:10px;letter-spacing:.12em;font-weight:700}.underlined-link span{font-size:18px}.section{padding:100px 6%;max-width:1500px;margin:auto}.section-heading{display:flex;align-items:end;justify-content:space-between;margin-bottom:38px}.section-heading h2{margin-bottom:0}.side-label{font-size:10px;letter-spacing:.14em;color:#8b9186;padding-bottom:10px}.room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.room-image{overflow:hidden;aspect-ratio:3/4}.room-image img{height:100%;transition:transform .45s}.room-card:hover img{transform:scale(1.045)}.room-caption{color:#84897f;font-size:10px;letter-spacing:.08em;margin:20px 0 9px}.room-card h3{font-size:30px;display:flex;align-items:center;justify-content:space-between}.room-card h3 span{font-family:'DM Sans',sans-serif;font-size:22px}.statement{background:#30372e;color:#fff;text-align:center;padding:130px 20px}.statement h2{font-size:clamp(42px,5vw,74px);line-height:1.24;margin-bottom:28px}.statement>p:not(.eyebrow){max-width:540px;color:#d4d8cf;margin:0 auto 32px;line-height:1.9;font-size:15px}.button-outline{border:1px solid #dfe3db}.article-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}.article-grid article>img{aspect-ratio:1.55;margin-bottom:26px}.article-grid .eyebrow{margin-bottom:14px}.article-grid h3{font-size:31px;margin-bottom:13px}.article-grid article>p:last-child{font-size:14px;color:#757a70;line-height:1.8}.newsletter{background:#e9e9e2;padding:90px 6%;display:flex;justify-content:space-between;align-items:center;gap:35px}.newsletter h2{margin-bottom:16px}.newsletter p:last-child{font-size:14px;color:#72786e;line-height:1.8}.button-dark{background:#30372e;color:white;white-space:nowrap}footer{padding:65px 6% 25px}.footer-top,.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:25px}.footer-top p{font-family:'Playfair Display',serif;font-style:italic;color:#777f72;font-size:20px}.footer-bottom{border-top:1px solid #ddd;margin-top:55px;padding-top:22px;color:#8b9086;font-size:9px;letter-spacing:.14em}@media(max-width:950px){.header nav{display:none}.room-grid{gap:15px}}@media(max-width:650px){.header{height:78px}.brand{font-size:22px}.nav-end{font-size:9px}.hero{height:78vh;min-height:610px}.hero-content{margin:0 7%}.hero h1{font-size:clamp(52px,12vw,78px)}.hero-caption{font-size:8px}.intro{padding:85px 6%}.section{padding:75px 6%}.side-label{display:none}.room-grid,.article-grid{grid-template-columns:1fr;gap:30px}.room-image{aspect-ratio:4/4.3}.statement{padding:95px 7%}.newsletter{padding:75px 7%;display:block}.newsletter .button{margin-top:15px}.footer-top,.footer-bottom{align-items:flex-start;flex-direction:column}.footer-top p{margin-top:18px}.footer-bottom{line-height:1.8}}
+</style>
+
+<style is:global>
+/* WESTMONT navigation: understated editorial styling */
+.header nav a{position:relative;padding:12px 0;transition:color .2s ease}.header nav a::after{content:'';position:absolute;bottom:5px;left:0;width:0;height:1px;background:currentColor;transition:width .25s ease}.header nav a:hover::after,.header nav a:focus-visible::after{width:100%}.header nav a:hover{color:#777f70}.mobile-menu{display:none}.mobile-menu summary{list-style:none;cursor:pointer;padding:16px 8px;min-width:44px;min-height:44px;display:flex;flex-direction:column;justify-content:center;gap:6px}.mobile-menu summary::-webkit-details-marker{display:none}.mobile-menu summary span{display:block;width:25px;height:1px;background:#292d27}.mobile-menu[open] summary span:first-child{transform:translateY(3.5px) rotate(45deg)}.mobile-menu[open] summary span:last-child{transform:translateY(-3.5px) rotate(-45deg)}@media(max-width:950px){.mobile-menu{display:block}.mobile-menu nav{display:none;position:absolute;z-index:50;top:100%;left:0;right:0;background:#f7f5f0;padding:30px 7% 44px;flex-direction:column;gap:10px;box-shadow:0 18px 30px rgba(0,0,0,.09)}.mobile-menu[open] nav{display:flex}.header{position:relative;z-index:20}.mobile-menu nav a{font-size:12px;letter-spacing:.16em;padding:15px 0;border-bottom:1px solid #e2e1d9}}@media(prefers-reduced-motion:reduce){.header nav a,.header nav a::after{transition:none}}
+</style>
+
+<style is:global>
+.header nav a[aria-current="page"]::after{width:100%}
+.journal-page{width:100%;max-width:none;padding:0;margin:0}.journal-intro{text-align:center;padding:86px 6% 72px}.journal-intro h1{font-size:clamp(68px,8vw,110px);line-height:1.1;letter-spacing:-.045em;margin-bottom:26px}.journal-deck{font-family:'Playfair Display',Georgia,serif;font-size:26px;margin-bottom:18px}.journal-description{max-width:600px;margin:0 auto;color:#74796f;font-size:15px;line-height:1.9}.journal-feature{display:grid;grid-template-columns:1.1fr 1fr;max-width:1320px;margin:0 auto 40px;padding:0 6%}.journal-feature>img{height:100%;min-height:490px;object-fit:cover}.feature-copy{background:#e9e9e2;padding:65px 12%;display:flex;flex-direction:column;align-items:flex-start;justify-content:center}.feature-copy h2{font-size:clamp(38px,4vw,60px);line-height:1.2;letter-spacing:-.035em;margin-bottom:24px}.feature-copy>p:not(.eyebrow){font-size:14px;color:#72786e;line-height:1.9;margin-bottom:26px}.journal-stories{max-width:1320px;margin:auto;padding:65px 6% 90px}.story-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}.story img{aspect-ratio:4/5;object-fit:cover;margin-bottom:25px}.story .eyebrow{font-size:9px;margin-bottom:14px}.story h3{font-size:29px;line-height:1.3;margin-bottom:15px}.story p:not(.eyebrow){font-size:14px;line-height:1.8;color:#74796f}.coming-soon{display:inline-block;font-size:9px;letter-spacing:.18em;border-top:1px solid #d8dacf;padding-top:16px;margin-top:5px;color:#777f70}.story a:hover h3{color:#777f70}.journal-note{text-align:center;background:#30372e;color:#f7f5f0;padding:85px 7%}.journal-note h2{font-size:clamp(38px,5vw,62px);line-height:1.2;margin-bottom:20px}.journal-note>p:not(.eyebrow){color:#d4d8cf;font-size:14px;line-height:1.8;margin-bottom:30px}a:focus-visible,summary:focus-visible{outline:2px solid #777f70;outline-offset:5px}@media(max-width:950px){.journal-feature{grid-template-columns:1fr 1fr}.feature-copy{padding:40px 10%}.journal-feature>img{min-height:430px}.story-grid{gap:20px}.story h3{font-size:25px}}@media(max-width:650px){.journal-intro{padding:60px 7% 48px}.journal-deck{font-size:23px}.journal-feature{grid-template-columns:1fr;padding:0 7%;margin-bottom:0}.journal-feature>img{min-height:0;height:auto;aspect-ratio:4/3}.feature-copy{padding:38px 9% 44px}.journal-stories{padding:55px 7% 65px}.story-grid{grid-template-columns:1fr;gap:42px}.story img{aspect-ratio:4/3}.story h3{font-size:30px}.journal-note{padding:65px 7%}}
+</style>
