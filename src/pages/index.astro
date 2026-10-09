@@ -21,9 +21,33 @@ const rooms = [
     <div class="announcement">THE ART OF LIVING BEAUTIFULLY, FOR LESS</div>
     <header class="header">
       <a class="brand" href="/" aria-label="Westmont homepage">WESTMONT<span>HOME & INTERIORS</span></a>
-      <nav aria-label="Main navigation"><a href="#spaces">SPACES</a><a href="/blog">THE JOURNAL</a><a href="#journal">THE EDIT</a><a href="#philosophy">ABOUT</a></nav>
-      <details class="mobile-menu"><summary aria-label="Open navigation"><span></span><span></span></summary><nav aria-label="Mobile navigation"><a href="/">HOME</a><a href="#spaces">SPACES</a><a href="/blog">THE JOURNAL</a><a href="#journal">THE EDIT</a><a href="#philosophy">ABOUT</a></nav></details>
+      <nav aria-label="Main navigation"><a href="#spaces">SPACES</a><a href="/blog/">THE JOURNAL</a><a href="#journal">THE EDIT</a><a href="#philosophy">ABOUT</a></nav>
+      <details class="mobile-menu"><summary aria-label="Open navigation"><span></span><span></span></summary><nav aria-label="Mobile navigation"><a href="/">HOME</a><a href="#spaces">SPACES</a><a href="/blog/">THE JOURNAL</a><a href="#journal">THE EDIT</a><a href="#philosophy">ABOUT</a></nav></details>
     </header>
+    <script>
+      const menu = document.querySelector<HTMLDetailsElement>('.mobile-menu');
+      const toggle = menu?.querySelector('summary');
+      if (menu && toggle) {
+        menu.addEventListener('toggle', () => {
+          toggle.setAttribute('aria-label', menu.open ? 'Close navigation' : 'Open navigation');
+        });
+        menu.querySelectorAll('a').forEach((link) => {
+          link.addEventListener('click', () => { menu.open = false; });
+        });
+        document.addEventListener('click', (event) => {
+          if (event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+        });
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && menu.open) {
+            menu.open = false;
+            toggle.focus();
+          }
+        });
+        window.matchMedia('(max-width: 950px)').addEventListener('change', () => {
+          menu.open = false;
+        });
+      }
+    </script>
     <main>
       <section class="hero" aria-label="Welcome to Westmont">
         <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2200&q=90" alt="Elegant contemporary interior with warm neutral finishes" fetchpriority="high" />
@@ -33,7 +57,7 @@ const rooms = [
       </section>
       <section class="intro" id="philosophy"><p class="eyebrow">THE WESTMONT PHILOSOPHY</p><h2>Good design isn't defined<br />by a <em>price tag.</em></h2><p>We believe a home should feel curated, personal, and quietly luxurious. Discover inspiring spaces, enduring design ideas, and attainable pieces chosen with intention.</p><a class="underlined-link" href="#journal">DISCOVER OUR POINT OF VIEW <span aria-hidden="true">↗</span></a></section>
       <section class="section" id="spaces"><div class="section-heading"><div><p class="eyebrow">A PLACE FOR EVERY DETAIL</p><h2>Explore by <em>space.</em></h2></div><span class="side-label">CURATED INSPIRATION / 01—03</span></div><div class="room-grid">{rooms.map((room, index) => <a class="room-card" href="#journal"><div class="room-image"><img src={room.image} alt={`${room.title} interior inspiration`} loading="lazy" /></div><p class="room-caption">0{index + 1} / {room.subtitle}</p><h3>{room.title}<span aria-hidden="true">↗</span></h3></a>)}</div></section>
-      <section class="statement"><p class="eyebrow light-text">LUXURY IS A FEELING</p><h2>Less about having more.<br /><em>More about living well.</em></h2><p>Layered textures. Natural materials. Pieces with purpose. The most beautiful rooms are the ones that feel like you.</p><a class="button button-outline" href="/blog">EXPLORE THE JOURNAL <span aria-hidden="true">↗</span></a></section>
+      <section class="statement"><p class="eyebrow light-text">LUXURY IS A FEELING</p><h2>Less about having more.<br /><em>More about living well.</em></h2><p>Layered textures. Natural materials. Pieces with purpose. The most beautiful rooms are the ones that feel like you.</p><a class="button button-outline" href="/blog/">EXPLORE THE JOURNAL <span aria-hidden="true">↗</span></a></section>
       <section class="section journal" id="journal"><div class="section-heading"><div><p class="eyebrow">NOTES FROM WESTMONT</p><h2>The <em>journal.</em></h2></div><span class="side-label">IDEAS WORTH KEEPING</span></div><div class="article-grid"><article><img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85" alt="Refined modern neutral interior" loading="lazy" /><p class="eyebrow">DESIGN NOTES · COMING SOON</p><h3>The art of a timeless, collected home</h3><p>Thoughtful design principles for spaces that feel effortlessly refined.</p></article><article><img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=85" alt="Layered textures and neutral decor" loading="lazy" /><p class="eyebrow">THE AFFORDABLE EDIT · COMING SOON</p><h3>Elevated details, approachable budgets</h3><p>Small changes that make an outsized difference to the way a room feels.</p></article></div></section>
       <section class="newsletter" id="newsletter"><div><p class="eyebrow">THE WESTMONT LETTER</p><h2>A little more <em>inspiration.</em></h2><p>Our newsletter is coming soon. Until then, discover inspiration for your next home project.</p></div><a class="button button-dark" href="mailto:hello@westmontinteriors.com?subject=Westmont%20inquiry">GET IN TOUCH <span aria-hidden="true">↗</span></a></section>
     </main>
@@ -46,5 +70,5 @@ const rooms = [
 
 <style is:global>
 /* WESTMONT navigation: understated editorial styling */
-.header nav a{position:relative;padding:12px 0;transition:color .2s ease}.header nav a::after{content:'';position:absolute;bottom:5px;left:0;width:0;height:1px;background:currentColor;transition:width .25s ease}.header nav a:hover::after,.header nav a:focus-visible::after{width:100%}.header nav a:hover{color:#777f70}.mobile-menu{display:none}.mobile-menu summary{list-style:none;cursor:pointer;padding:16px 8px;min-width:44px;min-height:44px;display:flex;flex-direction:column;justify-content:center;gap:6px}.mobile-menu summary::-webkit-details-marker{display:none}.mobile-menu summary span{display:block;width:25px;height:1px;background:#292d27}.mobile-menu[open] summary span:first-child{transform:translateY(3.5px) rotate(45deg)}.mobile-menu[open] summary span:last-child{transform:translateY(-3.5px) rotate(-45deg)}@media(max-width:950px){.mobile-menu{display:block}.mobile-menu nav{display:flex;position:absolute;z-index:50;top:100%;left:0;right:0;background:#f7f5f0;padding:30px 7% 44px;flex-direction:column;gap:10px;box-shadow:0 18px 30px rgba(0,0,0,.09)}.header{position:relative;z-index:20}.mobile-menu nav a{font-size:12px;letter-spacing:.16em;padding:15px 0;border-bottom:1px solid #e2e1d9}}@media(prefers-reduced-motion:reduce){.header nav a,.header nav a::after{transition:none}}
+.header nav a{position:relative;padding:12px 0;transition:color .2s ease}.header nav a::after{content:'';position:absolute;bottom:5px;left:0;width:0;height:1px;background:currentColor;transition:width .25s ease}.header nav a:hover::after,.header nav a:focus-visible::after{width:100%}.header nav a:hover{color:#777f70}.mobile-menu{display:none}.mobile-menu summary{list-style:none;cursor:pointer;padding:16px 8px;min-width:44px;min-height:44px;display:flex;flex-direction:column;justify-content:center;gap:6px}.mobile-menu summary::-webkit-details-marker{display:none}.mobile-menu summary span{display:block;width:25px;height:1px;background:#292d27}.mobile-menu[open] summary span:first-child{transform:translateY(3.5px) rotate(45deg)}.mobile-menu[open] summary span:last-child{transform:translateY(-3.5px) rotate(-45deg)}@media(max-width:950px){.mobile-menu{display:block}.mobile-menu nav{display:none;position:absolute;z-index:50;top:100%;left:0;right:0;background:#f7f5f0;padding:30px 7% 44px;flex-direction:column;gap:10px;box-shadow:0 18px 30px rgba(0,0,0,.09)}.mobile-menu[open] nav{display:flex}.header{position:relative;z-index:20}.mobile-menu nav a{font-size:12px;letter-spacing:.16em;padding:15px 0;border-bottom:1px solid #e2e1d9}}@media(prefers-reduced-motion:reduce){.header nav a,.header nav a::after{transition:none}}
 </style>
