@@ -1,4 +1,5 @@
 ---
+import WestmontFooter from '../components/WestmontFooter.astro';
 import Seo from '../components/Seo.astro';
 ---
 <!doctype html>
@@ -49,7 +50,7 @@ import Seo from '../components/Seo.astro';
       </section>
       <section class="about-reading"><p class="eyebrow">INSPIRATION, WITH INTENTION</p><h2>A more personal<br /><em>way to make a home.</em></h2><p>The Journal shares design ideas and the details that bring a room together. Curated Finds gathers pieces to help you put those ideas into practice. Both begin with the same question: what makes a space feel welcoming, considered, and your own?</p><p class="about-disclosure">Some links in Curated Finds are affiliate links. If you purchase through them, WESTMONT may earn a commission at no additional cost to you. We make that relationship clear so you can browse and choose with confidence.</p><div class="about-actions"><a class="button button-dark" href="/blog/">READ THE JOURNAL</a><a class="underlined-link" href="/curated-finds/">EXPLORE CURATED FINDS</a></div></section>
     </main>
-    <footer><div class="footer-top"><a class="brand" href="/">WESTMONT<span>HOME & INTERIORS</span></a><p>Beautiful living, within reach.</p></div><div class="footer-bottom"><span>© {new Date().getFullYear()} WESTMONT. ALL RIGHTS RESERVED.</span><span>INTERIORS · INSPIRATION · INTENTION</span></div></footer>
+    <WestmontFooter />
   </body>
 </html>
 <style is:global>
