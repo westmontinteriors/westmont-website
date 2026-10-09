@@ -1,0 +1,96 @@
+---
+import { z } from 'astro:content';
+const categories = ['Furniture', 'Lighting', 'Rugs', 'Decor', 'Wall Art'] as const;
+const productSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  image: z.string().refine(value => /^\/(?!\/)/.test(value) || /^https:\/\//.test(value)),
+  imageAlt: z.string().min(1),
+  category: z.enum(categories),
+  retailer: z.string().min(1),
+  affiliateUrl: z.string().url().refine(value => new URL(value).protocol === 'https:'),
+  priceLabel: z.string().optional(),
+  published: z.boolean().default(false),
+});
+const entries = import.meta.glob('../content/products/**/*.json', { eager: true, import: 'default' });
+const products = Object.entries(entries).flatMap(([filename, data]) => {
+  if (!(data && typeof data === 'object' && 'published' in data && data.published === true)) return [];
+  const parsed = productSchema.safeParse(data);
+  if (!parsed.success) throw new Error(`Invalid published Curated Find in ${filename}: ${parsed.error.message}`);
+  return [parsed.data];
+});
+const slug = (category: string) => category.toLowerCase().replaceAll(' ', '-');
+const categoryImages: Record<string, string> = {
+  Furniture: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=85',
+  Lighting: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1000&q=85',
+  Rugs: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1000&q=85',
+  Decor: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=85',
+  'Wall Art': 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1000&q=85',
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Thoughtfully chosen furniture, lighting, rugs, decor, and wall art. Discover attainable luxury with WESTMONT Curated Finds." />
+    <meta name="theme-color" content="#f7f5f0" />
+    <title>Curated Finds | WESTMONT Home & Interiors</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="announcement">THE ART OF LIVING BEAUTIFULLY, FOR LESS</div>
+    <header class="header">
+      <a class="brand" href="/" aria-label="Westmont homepage">WESTMONT<span>HOME & INTERIORS</span></a>
+      <nav aria-label="Main navigation"><a href="/#spaces">SPACES</a><a href="/blog/">THE JOURNAL</a><a href="/curated-finds/" aria-current="page">CURATED FINDS</a><a href="/#philosophy">ABOUT</a></nav>
+      <details class="mobile-menu"><summary aria-label="Open navigation"><span></span><span></span></summary><nav aria-label="Mobile navigation"><a href="/">HOME</a><a href="/#spaces">SPACES</a><a href="/blog/">THE JOURNAL</a><a href="/curated-finds/" aria-current="page">CURATED FINDS</a><a href="/#philosophy">ABOUT</a></nav></details>
+    </header>
+    <script>
+      const menu = document.querySelector<HTMLDetailsElement>('.mobile-menu');
+      const toggle = menu?.querySelector('summary');
+      if (menu && toggle) {
+        menu.addEventListener('toggle', () => {
+          toggle.setAttribute('aria-label', menu.open ? 'Close navigation' : 'Open navigation');
+        });
+        menu.querySelectorAll('a').forEach((link) => {
+          link.addEventListener('click', () => { menu.open = false; });
+        });
+        document.addEventListener('click', (event) => {
+          if (event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+        });
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && menu.open) {
+            menu.open = false;
+            toggle.focus();
+          }
+        });
+        window.matchMedia('(max-width: 950px)').addEventListener('change', () => {
+          menu.open = false;
+        });
+      }
+    </script>
+    <main class="finds-page">
+      <section class="finds-intro"><p class="eyebrow">CHOSEN WITH INTENTION</p><h1>Curated <em>finds.</em></h1><p class="finds-deck">Thoughtful pieces. Beautiful possibilities.</p><p class="finds-description">Furniture, lighting, and finishing touches selected for their enduring style and approachable price. A considered collection for a home that feels like you.</p></section>
+      <nav class="category-nav" aria-label="Browse product categories">{categories.map(category => <a href={`#${slug(category)}`}>{category}</a>)}</nav>
+      <div class="affiliate-note"><p>Some links on this page may be affiliate links. If you buy through them, WESTMONT may earn a commission at no additional cost to you.</p><p>Prices and availability can change. Check the retailer for current details.</p></div>
+      {products.length === 0 && <section class="finds-welcome"><div><p class="eyebrow">A COLLECTION IN THE MAKING</p><h2>Good things are<br /><em>worth choosing well.</em></h2><p>Our first selections are coming soon. Explore the categories below for a glimpse of what we're looking for.</p></div><img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1500&q=85" alt="A warm neutral living room with natural textures" fetchpriority="high" /></section>}
+      <div class="finds-collections">{categories.map(category => { const selection = products.filter(product => product.category === category); return <section class="finds-category" id={slug(category)} aria-labelledby={`${slug(category)}-title`}><div class="section-heading"><div><p class="eyebrow">THE CONSIDERED HOME</p><h2 id={`${slug(category)}-title`}>{category}</h2></div><span class="side-label">{selection.length > 0 ? `${selection.length} ${selection.length === 1 ? 'SELECTED FIND' : 'SELECTED FINDS'}` : 'COMING SOON'}</span></div>{selection.length > 0 ? <div class="product-grid">{selection.map(product => <article class="product-card"><a class="product-image" href={product.affiliateUrl} target="_blank" rel="sponsored noopener noreferrer" aria-label={`${product.title} at ${product.retailer} (opens in a new tab)`}><img src={product.image} alt={product.imageAlt} loading="lazy" /></a><p class="eyebrow">{product.retailer}</p><h3>{product.title}</h3><p class="product-description">{product.description}</p>{product.priceLabel && <p class="price-label">{product.priceLabel}</p>}<a class="underlined-link" href={product.affiliateUrl} target="_blank" rel="sponsored noopener noreferrer">VIEW AT {product.retailer.toUpperCase()}<span class="sr-only"> (opens in a new tab)</span></a></article>)}</div> : <div class="category-preview"><img src={categoryImages[category]} alt={`${category} inspiration in a neutral home interior`} loading="lazy" /><div><p class="eyebrow">OUR FIRST FINDS ARE COMING SOON</p><h3>{category === 'Furniture' ? 'Pieces to build a room around.' : category === 'Lighting' ? 'A warmer way to see your space.' : category === 'Rugs' ? 'Texture from the ground up.' : category === 'Decor' ? 'The details that make it personal.' : 'A finishing touch with a point of view.'}</h3><p>We're choosing our first {category.toLowerCase()} finds with care. Check back for considered recommendations.</p></div></div>}</section>})}</div>
+      <section class="finds-note"><p class="eyebrow light-text">MORE THAN A SHOPPING LIST</p><h2>Bring the whole room <em>together.</em></h2><p>Discover the ideas behind a more considered home in The Journal.</p><a class="button button-outline" href="/blog/">EXPLORE THE JOURNAL</a></section>
+    </main>
+    <footer><div class="footer-top"><a class="brand" href="/">WESTMONT<span>HOME & INTERIORS</span></a><p>Beautiful living, within reach.</p></div><div class="footer-bottom"><span>© {new Date().getFullYear()} WESTMONT. ALL RIGHTS RESERVED.</span><span>INTERIORS · INSPIRATION · INTENTION</span></div></footer>
+  </body>
+</html>
+<style is:global>
+:root{font-family:'DM Sans',Arial,sans-serif;color:#292d27;background:#f7f5f0}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0}a{color:inherit;text-decoration:none}img{display:block;width:100%;object-fit:cover}h1,h2,h3,p{margin-top:0}h1,h2,h3{font-weight:400}h1,h2,h3{font-family:'Playfair Display',Georgia,serif}em{font-weight:400}.announcement{background:#30372e;color:#f7f5f0;text-align:center;padding:12px;font-size:9px;letter-spacing:.24em}.header{height:96px;padding:0 6%;display:flex;justify-content:space-between;align-items:center;gap:20px}.brand{display:inline-flex;flex-direction:column;align-items:center;font-family:Georgia,serif;font-size:27px;letter-spacing:.17em;white-space:nowrap;line-height:1}.brand span{font-family:'DM Sans',sans-serif;font-size:8px;letter-spacing:.35em;margin-top:10px}.header nav{display:flex;gap:32px}.header nav a,.nav-end{font-size:10px;letter-spacing:.13em;font-weight:600}.nav-end span{font-size:18px;margin-left:6px}.hero{height:700px;max-height:85vh;min-height:560px;display:flex;align-items:center;position:relative;color:white}.hero>img,.hero-overlay{position:absolute;inset:0;height:100%}.hero-overlay{background:linear-gradient(90deg,rgba(19,23,19,.72),rgba(19,23,19,.13))}.hero-content{position:relative;margin-left:9%;max-width:760px}.eyebrow{font-size:10px;letter-spacing:.23em;font-weight:700;color:#777f70;margin-bottom:22px}.light-text{color:#e5e8df}.hero h1{font-size:clamp(58px,7.5vw,112px);line-height:1.08;letter-spacing:-.045em;margin-bottom:26px}.hero-description{max-width:470px;font-size:15px;line-height:1.9;color:#f0f0e9;margin-bottom:32px}.button{display:inline-flex;justify-content:space-between;align-items:center;gap:38px;padding:20px 26px;font-size:10px;letter-spacing:.14em;font-weight:700}.button span{font-size:18px}.button-light{background:#f7f5f0;color:#292d27}.hero-caption{position:absolute;right:5%;bottom:32px;font-size:10px;letter-spacing:.16em}.intro{padding:115px 20px;text-align:center;max-width:920px;margin:auto}.intro h2,.section-heading h2,.newsletter h2{font-size:clamp(42px,5vw,72px);line-height:1.22;letter-spacing:-.035em}.intro h2{margin-bottom:26px}.intro>p:not(.eyebrow){max-width:630px;margin:0 auto 30px;color:#74796f;font-size:15px;line-height:1.9}.underlined-link{display:inline-flex;align-items:center;gap:25px;border-bottom:1px solid;padding-bottom:10px;font-size:10px;letter-spacing:.12em;font-weight:700}.underlined-link span{font-size:18px}.section{padding:100px 6%;max-width:1500px;margin:auto}.section-heading{display:flex;align-items:end;justify-content:space-between;margin-bottom:38px}.section-heading h2{margin-bottom:0}.side-label{font-size:10px;letter-spacing:.14em;color:#8b9186;padding-bottom:10px}.room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.room-image{overflow:hidden;aspect-ratio:3/4}.room-image img{height:100%;transition:transform .45s}.room-card:hover img{transform:scale(1.045)}.room-caption{color:#84897f;font-size:10px;letter-spacing:.08em;margin:20px 0 9px}.room-card h3{font-size:30px;display:flex;align-items:center;justify-content:space-between}.room-card h3 span{font-family:'DM Sans',sans-serif;font-size:22px}.statement{background:#30372e;color:#fff;text-align:center;padding:130px 20px}.statement h2{font-size:clamp(42px,5vw,74px);line-height:1.24;margin-bottom:28px}.statement>p:not(.eyebrow){max-width:540px;color:#d4d8cf;margin:0 auto 32px;line-height:1.9;font-size:15px}.button-outline{border:1px solid #dfe3db}.article-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}.article-grid article>img{aspect-ratio:1.55;margin-bottom:26px}.article-grid .eyebrow{margin-bottom:14px}.article-grid h3{font-size:31px;margin-bottom:13px}.article-grid article>p:last-child{font-size:14px;color:#757a70;line-height:1.8}.newsletter{background:#e9e9e2;padding:90px 6%;display:flex;justify-content:space-between;align-items:center;gap:35px}.newsletter h2{margin-bottom:16px}.newsletter p:last-child{font-size:14px;color:#72786e;line-height:1.8}.button-dark{background:#30372e;color:white;white-space:nowrap}footer{padding:65px 6% 25px}.footer-top,.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:25px}.footer-top p{font-family:'Playfair Display',serif;font-style:italic;color:#777f72;font-size:20px}.footer-bottom{border-top:1px solid #ddd;margin-top:55px;padding-top:22px;color:#8b9086;font-size:9px;letter-spacing:.14em}@media(max-width:950px){.header nav{display:none}.room-grid{gap:15px}}@media(max-width:650px){.header{height:78px}.brand{font-size:22px}.nav-end{font-size:9px}.hero{height:78vh;min-height:610px}.hero-content{margin:0 7%}.hero h1{font-size:clamp(52px,12vw,78px)}.hero-caption{font-size:8px}.intro{padding:85px 6%}.section{padding:75px 6%}.side-label{display:none}.room-grid,.article-grid{grid-template-columns:1fr;gap:30px}.room-image{aspect-ratio:4/4.3}.statement{padding:95px 7%}.newsletter{padding:75px 7%;display:block}.newsletter .button{margin-top:15px}.footer-top,.footer-bottom{align-items:flex-start;flex-direction:column}.footer-top p{margin-top:18px}.footer-bottom{line-height:1.8}}
+</style>
+
+<style is:global>
+/* WESTMONT navigation: understated editorial styling */
+.header nav a{position:relative;padding:12px 0;transition:color .2s ease}.header nav a::after{content:'';position:absolute;bottom:5px;left:0;width:0;height:1px;background:currentColor;transition:width .25s ease}.header nav a:hover::after,.header nav a:focus-visible::after{width:100%}.header nav a:hover{color:#777f70}.mobile-menu{display:none}.mobile-menu summary{list-style:none;cursor:pointer;padding:16px 8px;min-width:44px;min-height:44px;display:flex;flex-direction:column;justify-content:center;gap:6px}.mobile-menu summary::-webkit-details-marker{display:none}.mobile-menu summary span{display:block;width:25px;height:1px;background:#292d27}.mobile-menu[open] summary span:first-child{transform:translateY(3.5px) rotate(45deg)}.mobile-menu[open] summary span:last-child{transform:translateY(-3.5px) rotate(-45deg)}@media(max-width:950px){.mobile-menu{display:block}.mobile-menu nav{display:none;position:absolute;z-index:50;top:100%;left:0;right:0;background:#f7f5f0;padding:30px 7% 44px;flex-direction:column;gap:10px;box-shadow:0 18px 30px rgba(0,0,0,.09)}.mobile-menu[open] nav{display:flex}.header{position:relative;z-index:20}.mobile-menu nav a{font-size:12px;letter-spacing:.16em;padding:15px 0;border-bottom:1px solid #e2e1d9}}@media(prefers-reduced-motion:reduce){.header nav a,.header nav a::after{transition:none}}
+</style>
+
+<style is:global>
+.header nav a[aria-current="page"]::after{width:100%}.finds-page{margin:0;padding:0}.finds-intro{text-align:center;padding:85px 7% 55px}.finds-intro h1{font-size:clamp(60px,8vw,108px);line-height:1.1;letter-spacing:-.045em;margin-bottom:26px}.finds-deck{font-family:'Playfair Display',Georgia,serif;font-size:26px;margin-bottom:18px}.finds-description{max-width:650px;margin:auto;color:#74796f;font-size:15px;line-height:1.9}.category-nav{display:flex;justify-content:center;flex-wrap:wrap;gap:14px 36px;padding:24px 7%;border-top:1px solid #e2e1d9;border-bottom:1px solid #e2e1d9}.category-nav a{font-size:10px;letter-spacing:.16em;text-transform:uppercase;padding:8px 0}.category-nav a:hover{text-decoration:underline;text-underline-offset:7px}.affiliate-note{padding:25px 7% 35px;max-width:1000px;margin:auto;text-align:center}.affiliate-note p{font-size:11px;line-height:1.8;color:#74796f;margin-bottom:6px}.finds-welcome{max-width:1320px;margin:15px auto 30px;padding:0 6%;display:grid;grid-template-columns:1fr 1.15fr}.finds-welcome>div{background:#e9e9e2;padding:55px 12%;display:flex;flex-direction:column;justify-content:center}.finds-welcome h2{font-size:clamp(36px,4vw,55px);line-height:1.2;letter-spacing:-.035em;margin-bottom:24px}.finds-welcome p:not(.eyebrow){font-size:14px;line-height:1.9;color:#74796f}.finds-welcome>img{height:100%;min-height:380px}.finds-collections{max-width:1320px;margin:auto;padding:0 6% 75px}.finds-category{padding-top:65px;scroll-margin-top:25px}.finds-category .section-heading h2{font-size:clamp(38px,4vw,54px)}.category-preview{display:grid;grid-template-columns:1fr 1.5fr;background:#eeeee7}.category-preview>img{height:260px}.category-preview>div{padding:35px 9%;align-self:center}.category-preview h3{font-size:30px;line-height:1.3;margin-bottom:16px}.category-preview p:not(.eyebrow){font-size:14px;line-height:1.8;color:#74796f;margin-bottom:0}.product-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px 28px}.product-image{display:block;background:#e9e9e2;overflow:hidden;margin-bottom:23px}.product-image img{aspect-ratio:4/5;transition:transform .3s}.product-image:hover img{transform:scale(1.025)}.product-card .eyebrow{font-size:9px;margin-bottom:13px}.product-card h3{font-size:28px;line-height:1.25;margin-bottom:15px}.product-description{font-size:14px;line-height:1.8;color:#74796f}.price-label{font-size:12px;color:#565e50}.product-card .underlined-link{font-size:9px;line-height:1.7}.finds-note{text-align:center;background:#30372e;color:#f7f5f0;padding:85px 7%}.finds-note h2{font-size:clamp(38px,5vw,60px);line-height:1.2;margin-bottom:25px}.finds-note>p:not(.eyebrow){font-size:14px;line-height:1.8;color:#d4d8cf;margin-bottom:30px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}a:focus-visible,summary:focus-visible{outline:2px solid #777f70;outline-offset:5px}@media(max-width:950px){.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.finds-welcome>div{padding:40px 10%}}@media(max-width:650px){.finds-intro{padding:60px 7% 40px}.finds-deck{font-size:23px}.category-nav{gap:12px 22px}.finds-welcome{padding:0 7%;grid-template-columns:1fr}.finds-welcome>img{min-height:0;height:auto;aspect-ratio:4/3}.finds-welcome>div{padding:40px 9%}.finds-collections{padding:0 7% 60px}.finds-category{padding-top:45px}.category-preview{grid-template-columns:1fr}.category-preview>img{height:auto;aspect-ratio:16/9}.category-preview>div{padding:30px 9% 36px}.category-preview h3{font-size:28px}.product-grid{grid-template-columns:1fr;gap:40px}.product-image img{aspect-ratio:1}.finds-note{padding:65px 7%}}@media(prefers-reduced-motion:reduce){.product-image img{transition:none}html{scroll-behavior:auto}}
+</style>
