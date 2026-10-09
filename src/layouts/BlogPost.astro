@@ -1,85 +1,92 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-
 type Props = CollectionEntry<'blog'>['data'];
-
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, 'https://westmontinteriors.com');
+const socialImage = new URL(heroImage || '/blog-placeholder-1.jpg', canonicalURL);
+const formatDate = (date: Date) => date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 ---
-
+<!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
-	</head>
-
-	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <img width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f7f5f0" />
+    <title>{title} | WESTMONT</title>
+    <link rel="canonical" href={canonicalURL} />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={`${title} | WESTMONT`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="article:published_time" content={pubDate.toISOString()} />
+    {updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${title} | WESTMONT`} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="announcement">THE ART OF LIVING BEAUTIFULLY, FOR LESS</div>
+    <header class="header">
+      <a class="brand" href="/" aria-label="Westmont homepage">WESTMONT<span>HOME & INTERIORS</span></a>
+      <nav aria-label="Main navigation"><a href="/#spaces">SPACES</a><a href="/blog/" aria-current="page">THE JOURNAL</a><a href="/curated-finds/">CURATED FINDS</a><a href="/#philosophy">ABOUT</a></nav>
+      <details class="mobile-menu"><summary aria-label="Open navigation"><span></span><span></span></summary><nav aria-label="Mobile navigation"><a href="/">HOME</a><a href="/#spaces">SPACES</a><a href="/blog/" aria-current="page">THE JOURNAL</a><a href="/curated-finds/">CURATED FINDS</a><a href="/#philosophy">ABOUT</a></nav></details>
+    </header>
+    <script>
+      const menu = document.querySelector<HTMLDetailsElement>('.mobile-menu');
+      const toggle = menu?.querySelector('summary');
+      if (menu && toggle) {
+        menu.addEventListener('toggle', () => {
+          toggle.setAttribute('aria-label', menu.open ? 'Close navigation' : 'Open navigation');
+        });
+        menu.querySelectorAll('a').forEach((link) => {
+          link.addEventListener('click', () => { menu.open = false; });
+        });
+        document.addEventListener('click', (event) => {
+          if (event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+        });
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && menu.open) {
+            menu.open = false;
+            toggle.focus();
+          }
+        });
+        window.matchMedia('(max-width: 950px)').addEventListener('change', () => {
+          menu.open = false;
+        });
+      }
+    </script>
+    <main class="article-page">
+      <article>
+        <header class="article-heading">
+          <a class="article-back" href="/blog/">THE JOURNAL</a>
+          <h1>{title}</h1>
+          <p class="article-description">{description}</p>
+          <div class="article-dates"><time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>{updatedDate && <span>UPDATED <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time></span>}</div>
+        </header>
+        {heroImage && <div class="article-hero"><img src={heroImage} alt={title} fetchpriority="high" /></div>}
+        <div class="article-body"><slot /></div>
+        <div class="article-end"><span class="eyebrow">MORE IDEAS FOR A CONSIDERED HOME</span><a class="underlined-link" href="/blog/">BACK TO THE JOURNAL</a></div>
+      </article>
+      <section class="article-finds"><p class="eyebrow light-text">CHOSEN WITH INTENTION</p><h2>Find the details that<br /><em>bring it home.</em></h2><p>Explore thoughtful furniture, lighting, and finishing touches in Curated Finds.</p><a class="button button-outline" href="/curated-finds/">EXPLORE CURATED FINDS</a></section>
+    </main>
+    <footer><div class="footer-top"><a class="brand" href="/">WESTMONT<span>HOME & INTERIORS</span></a><p>Beautiful living, within reach.</p></div><div class="footer-bottom"><span>© {new Date().getFullYear()} WESTMONT. ALL RIGHTS RESERVED.</span><span>INTERIORS · INSPIRATION · INTENTION</span></div></footer>
+  </body>
 </html>
+<style is:global>
+:root{font-family:'DM Sans',Arial,sans-serif;color:#292d27;background:#f7f5f0}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0}a{color:inherit;text-decoration:none}img{display:block;width:100%;object-fit:cover}h1,h2,h3,p{margin-top:0}h1,h2,h3{font-weight:400}h1,h2,h3{font-family:'Playfair Display',Georgia,serif}em{font-weight:400}.announcement{background:#30372e;color:#f7f5f0;text-align:center;padding:12px;font-size:9px;letter-spacing:.24em}.header{height:96px;padding:0 6%;display:flex;justify-content:space-between;align-items:center;gap:20px}.brand{display:inline-flex;flex-direction:column;align-items:center;font-family:Georgia,serif;font-size:27px;letter-spacing:.17em;white-space:nowrap;line-height:1}.brand span{font-family:'DM Sans',sans-serif;font-size:8px;letter-spacing:.35em;margin-top:10px}.header nav{display:flex;gap:32px}.header nav a,.nav-end{font-size:10px;letter-spacing:.13em;font-weight:600}.nav-end span{font-size:18px;margin-left:6px}.hero{height:700px;max-height:85vh;min-height:560px;display:flex;align-items:center;position:relative;color:white}.hero>img,.hero-overlay{position:absolute;inset:0;height:100%}.hero-overlay{background:linear-gradient(90deg,rgba(19,23,19,.72),rgba(19,23,19,.13))}.hero-content{position:relative;margin-left:9%;max-width:760px}.eyebrow{font-size:10px;letter-spacing:.23em;font-weight:700;color:#777f70;margin-bottom:22px}.light-text{color:#e5e8df}.hero h1{font-size:clamp(58px,7.5vw,112px);line-height:1.08;letter-spacing:-.045em;margin-bottom:26px}.hero-description{max-width:470px;font-size:15px;line-height:1.9;color:#f0f0e9;margin-bottom:32px}.button{display:inline-flex;justify-content:space-between;align-items:center;gap:38px;padding:20px 26px;font-size:10px;letter-spacing:.14em;font-weight:700}.button span{font-size:18px}.button-light{background:#f7f5f0;color:#292d27}.hero-caption{position:absolute;right:5%;bottom:32px;font-size:10px;letter-spacing:.16em}.intro{padding:115px 20px;text-align:center;max-width:920px;margin:auto}.intro h2,.section-heading h2,.newsletter h2{font-size:clamp(42px,5vw,72px);line-height:1.22;letter-spacing:-.035em}.intro h2{margin-bottom:26px}.intro>p:not(.eyebrow){max-width:630px;margin:0 auto 30px;color:#74796f;font-size:15px;line-height:1.9}.underlined-link{display:inline-flex;align-items:center;gap:25px;border-bottom:1px solid;padding-bottom:10px;font-size:10px;letter-spacing:.12em;font-weight:700}.underlined-link span{font-size:18px}.section{padding:100px 6%;max-width:1500px;margin:auto}.section-heading{display:flex;align-items:end;justify-content:space-between;margin-bottom:38px}.section-heading h2{margin-bottom:0}.side-label{font-size:10px;letter-spacing:.14em;color:#8b9186;padding-bottom:10px}.room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.room-image{overflow:hidden;aspect-ratio:3/4}.room-image img{height:100%;transition:transform .45s}.room-card:hover img{transform:scale(1.045)}.room-caption{color:#84897f;font-size:10px;letter-spacing:.08em;margin:20px 0 9px}.room-card h3{font-size:30px;display:flex;align-items:center;justify-content:space-between}.room-card h3 span{font-family:'DM Sans',sans-serif;font-size:22px}.statement{background:#30372e;color:#fff;text-align:center;padding:130px 20px}.statement h2{font-size:clamp(42px,5vw,74px);line-height:1.24;margin-bottom:28px}.statement>p:not(.eyebrow){max-width:540px;color:#d4d8cf;margin:0 auto 32px;line-height:1.9;font-size:15px}.button-outline{border:1px solid #dfe3db}.article-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}.article-grid article>img{aspect-ratio:1.55;margin-bottom:26px}.article-grid .eyebrow{margin-bottom:14px}.article-grid h3{font-size:31px;margin-bottom:13px}.article-grid article>p:last-child{font-size:14px;color:#757a70;line-height:1.8}.newsletter{background:#e9e9e2;padding:90px 6%;display:flex;justify-content:space-between;align-items:center;gap:35px}.newsletter h2{margin-bottom:16px}.newsletter p:last-child{font-size:14px;color:#72786e;line-height:1.8}.button-dark{background:#30372e;color:white;white-space:nowrap}footer{padding:65px 6% 25px}.footer-top,.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:25px}.footer-top p{font-family:'Playfair Display',serif;font-style:italic;color:#777f72;font-size:20px}.footer-bottom{border-top:1px solid #ddd;margin-top:55px;padding-top:22px;color:#8b9086;font-size:9px;letter-spacing:.14em}@media(max-width:950px){.header nav{display:none}.room-grid{gap:15px}}@media(max-width:650px){.header{height:78px}.brand{font-size:22px}.nav-end{font-size:9px}.hero{height:78vh;min-height:610px}.hero-content{margin:0 7%}.hero h1{font-size:clamp(52px,12vw,78px)}.hero-caption{font-size:8px}.intro{padding:85px 6%}.section{padding:75px 6%}.side-label{display:none}.room-grid,.article-grid{grid-template-columns:1fr;gap:30px}.room-image{aspect-ratio:4/4.3}.statement{padding:95px 7%}.newsletter{padding:75px 7%;display:block}.newsletter .button{margin-top:15px}.footer-top,.footer-bottom{align-items:flex-start;flex-direction:column}.footer-top p{margin-top:18px}.footer-bottom{line-height:1.8}}
+</style>
+
+<style is:global>
+/* WESTMONT navigation: understated editorial styling */
+.header nav a{position:relative;padding:12px 0;transition:color .2s ease}.header nav a::after{content:'';position:absolute;bottom:5px;left:0;width:0;height:1px;background:currentColor;transition:width .25s ease}.header nav a:hover::after,.header nav a:focus-visible::after{width:100%}.header nav a:hover{color:#777f70}.mobile-menu{display:none}.mobile-menu summary{list-style:none;cursor:pointer;padding:16px 8px;min-width:44px;min-height:44px;display:flex;flex-direction:column;justify-content:center;gap:6px}.mobile-menu summary::-webkit-details-marker{display:none}.mobile-menu summary span{display:block;width:25px;height:1px;background:#292d27}.mobile-menu[open] summary span:first-child{transform:translateY(3.5px) rotate(45deg)}.mobile-menu[open] summary span:last-child{transform:translateY(-3.5px) rotate(-45deg)}@media(max-width:950px){.mobile-menu{display:block}.mobile-menu nav{display:none;position:absolute;z-index:50;top:100%;left:0;right:0;background:#f7f5f0;padding:30px 7% 44px;flex-direction:column;gap:10px;box-shadow:0 18px 30px rgba(0,0,0,.09)}.mobile-menu[open] nav{display:flex}.header{position:relative;z-index:20}.mobile-menu nav a{font-size:12px;letter-spacing:.16em;padding:15px 0;border-bottom:1px solid #e2e1d9}}@media(prefers-reduced-motion:reduce){.header nav a,.header nav a::after{transition:none}}
+</style>
+
+<style is:global>
+.header nav a[aria-current="page"]::after{width:100%}.article-page{margin:0;padding:0}.article-heading{text-align:center;max-width:1040px;padding:75px 7% 55px;margin:auto}.article-back{display:inline-block;font-size:10px;letter-spacing:.2em;color:#777f70;border-bottom:1px solid #bfc3b7;padding-bottom:8px;margin-bottom:32px}.article-heading h1{font-size:clamp(40px,5.5vw,76px);line-height:1.13;letter-spacing:-.035em;margin-bottom:28px;text-wrap:balance}.article-description{font-size:17px;line-height:1.8;color:#74796f;max-width:690px;margin:0 auto 28px}.article-dates{display:flex;justify-content:center;flex-wrap:wrap;gap:12px 26px;color:#777f70;font-size:10px;letter-spacing:.1em}.article-hero{max-width:1260px;margin:0 auto 60px;padding:0 6%}.article-hero img{aspect-ratio:16/9;object-fit:cover}.article-body{max-width:760px;margin:0 auto;padding:0 28px 45px;font-size:17px;line-height:1.95;color:#444a3f;overflow-wrap:anywhere}.article-body p{margin:0 0 1.65em}.article-body h1,.article-body h2,.article-body h3,.article-body h4,.article-body h5,.article-body h6{font-family:'Playfair Display',Georgia,serif;font-weight:400;color:#292d27;line-height:1.25;margin:1.6em 0 .7em;letter-spacing:-.02em}.article-body h1,.article-body h2{font-size:36px}.article-body h3{font-size:28px}.article-body h4{font-size:23px}.article-body a{text-decoration:underline;text-underline-offset:4px;text-decoration-color:#a5ad9a}.article-body a:hover{color:#777f70}.article-body ul,.article-body ol{padding-left:1.5em;margin:0 0 1.7em}.article-body li{margin-bottom:.55em}.article-body img{width:auto;max-width:100%;height:auto;margin:32px auto}.article-body blockquote{margin:36px 0;padding:12px 0 12px 28px;border-left:2px solid #8d9781;font-family:'Playfair Display',Georgia,serif;font-size:27px;line-height:1.6;color:#56604d}.article-body blockquote p:last-child{margin-bottom:0}.article-body hr{border:0;border-top:1px solid #d8dacf;margin:45px 0}.article-body table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:30px 0;font-size:14px}.article-body th,.article-body td{padding:12px 16px;text-align:left;border-bottom:1px solid #d8dacf}.article-body th{background:#e9e9e2}.article-body pre{overflow-x:auto;background:#e9e9e2;padding:22px;font-size:13px;line-height:1.6}.article-body code{font-size:.85em;background:#e9e9e2;padding:2px 5px}.article-body pre code{padding:0;background:transparent}.article-body figure{margin:30px 0}.article-body figcaption{font-size:12px;color:#74796f;text-align:center}.article-end{max-width:704px;margin:0 auto 75px;padding:30px 0 0;border-top:1px solid #d8dacf;display:flex;align-items:center;justify-content:space-between;gap:22px}.article-end .eyebrow{font-size:8px;margin:0}.article-end .underlined-link{font-size:9px;white-space:nowrap}.article-finds{text-align:center;background:#30372e;color:#f7f5f0;padding:85px 7%}.article-finds h2{font-size:clamp(38px,5vw,60px);line-height:1.2;margin-bottom:25px}.article-finds>p:not(.eyebrow){max-width:500px;margin:0 auto 30px;color:#d4d8cf;font-size:14px;line-height:1.8}a:focus-visible,summary:focus-visible{outline:2px solid #777f70;outline-offset:5px}@media(max-width:650px){.article-heading{padding:50px 7% 38px}.article-description{font-size:15px}.article-back{margin-bottom:25px}.article-hero{padding:0;margin-bottom:38px}.article-hero img{aspect-ratio:4/3}.article-body{padding:0 7% 30px;font-size:16px;line-height:1.9}.article-body h1,.article-body h2{font-size:30px}.article-body h3{font-size:25px}.article-body blockquote{padding-left:20px;font-size:24px}.article-end{margin:0 7% 55px;flex-direction:column;align-items:flex-start}.article-finds{padding:65px 7%}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
