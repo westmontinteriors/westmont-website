@@ -24,8 +24,8 @@ const upcoming = [
     <div class="announcement">THE ART OF LIVING BEAUTIFULLY, FOR LESS</div>
     <header class="header">
       <a class="brand" href="/" aria-label="Westmont homepage">WESTMONT<span>HOME & INTERIORS</span></a>
-      <nav aria-label="Main navigation"><a href="/#spaces">SPACES</a><a href="/blog/" aria-current="page">THE JOURNAL</a><a href="/curated-finds/">CURATED FINDS</a><a href="/#philosophy">ABOUT</a></nav>
-      <details class="mobile-menu"><summary aria-label="Open navigation"><span></span><span></span></summary><nav aria-label="Mobile navigation"><a href="/">HOME</a><a href="/#spaces">SPACES</a><a href="/blog/" aria-current="page">THE JOURNAL</a><a href="/curated-finds/">CURATED FINDS</a><a href="/#philosophy">ABOUT</a></nav></details>
+      <nav aria-label="Main navigation"><a href="/#spaces">SPACES</a><a href="/blog/" aria-current="page">THE JOURNAL</a><a href="/curated-finds/">CURATED FINDS</a><a href="/about/">ABOUT</a></nav>
+      <details class="mobile-menu"><summary aria-label="Open navigation"><span></span><span></span></summary><nav aria-label="Mobile navigation"><a href="/">HOME</a><a href="/#spaces">SPACES</a><a href="/blog/" aria-current="page">THE JOURNAL</a><a href="/curated-finds/">CURATED FINDS</a><a href="/about/">ABOUT</a></nav></details>
     </header>
     <script>
       const menu = document.querySelector<HTMLDetailsElement>('.mobile-menu');
@@ -60,7 +60,7 @@ const upcoming = [
       </section>
       <section class="journal-feature" aria-labelledby="feature-title">
         <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1600&q=85" alt="Living room with warm neutral furnishings and natural textures" fetchpriority="high" />
-        <div class="feature-copy"><p class="eyebrow">THE WESTMONT POINT OF VIEW</p><h2 id="feature-title">Beautiful spaces.<br /><em>Thoughtful choices.</em></h2><p>A luxurious home begins with intention. The proportions, the textures, the pieces you choose to keep. Our journal explores how to bring that feeling home, at a price that feels within reach.</p><a class="underlined-link" href="/#philosophy">OUR APPROACH</a></div>
+        <div class="feature-copy"><p class="eyebrow">THE WESTMONT POINT OF VIEW</p><h2 id="feature-title">Beautiful spaces.<br /><em>Thoughtful choices.</em></h2><p>A luxurious home begins with intention. The proportions, the textures, the pieces you choose to keep. Our journal explores how to bring that feeling home, at a price that feels within reach.</p><a class="underlined-link" href="/about/">OUR APPROACH</a></div>
       </section>
       {posts.length > 0 && <section class="journal-stories" aria-labelledby="latest-title"><div class="section-heading"><div><p class="eyebrow">FRESH PERSPECTIVES</p><h2 id="latest-title">Latest <em>stories.</em></h2></div></div><div class="story-grid">{posts.map(post => <article class="story"><a href={`/blog/${post.id}/`}>{post.data.heroImage && <img src={post.data.heroImage} alt={post.data.title} loading="lazy" />}<p class="eyebrow">THE JOURNAL · <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</time></p><h3>{post.data.title}</h3><p>{post.data.description}</p><span class="underlined-link">READ THE STORY</span></a></article>)}</div></section>}
       <section class="journal-stories" aria-labelledby="upcoming-title"><div class="section-heading"><div><p class="eyebrow">A FIRST LOOK</p><h2 id="upcoming-title">On the <em>horizon.</em></h2></div><span class="side-label">OUR FIRST STORIES ARE COMING SOON</span></div><div class="story-grid">{upcoming.map(story => <article class="story"><img src={story.image} alt={story.alt} loading="lazy" /><p class="eyebrow">{story.category}</p><h3>{story.title}</h3><p>{story.description}</p><span class="coming-soon">COMING SOON</span></article>)}</div></section>
