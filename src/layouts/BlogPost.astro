@@ -1,31 +1,14 @@
 ---
+import Seo from '../components/Seo.astro';
 import type { CollectionEntry } from 'astro:content';
 type Props = CollectionEntry<'blog'>['data'];
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, 'https://westmontinteriors.com');
-const socialImage = new URL(heroImage || '/blog-placeholder-1.jpg', canonicalURL);
 const formatDate = (date: Date) => date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 ---
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
-    <meta name="theme-color" content="#f7f5f0" />
-    <title>{title} | WESTMONT</title>
-    <link rel="canonical" href={canonicalURL} />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content={`${title} | WESTMONT`} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:image" content={socialImage} />
-    <meta property="article:published_time" content={pubDate.toISOString()} />
-    {updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()} />}
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={`${title} | WESTMONT`} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={socialImage} />
+    <Seo title={`${title} | WESTMONT`} description={description} image={heroImage} type="article" published={pubDate} updated={updatedDate} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
