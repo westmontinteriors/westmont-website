@@ -3,7 +3,7 @@ import WestmontFooter from '../components/WestmontFooter.astro';
 import Seo from '../components/Seo.astro';
 import type { CollectionEntry } from 'astro:content';
 type Props = CollectionEntry<'blog'>['data'];
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, heroImageAlt } = Astro.props;
 const formatDate = (date: Date) => date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 ---
 <!doctype html>
@@ -53,11 +53,10 @@ const formatDate = (date: Date) => date.toLocaleDateString('en-US', { month: 'lo
           <p class="article-description">{description}</p>
           <div class="article-dates"><time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>{updatedDate && <span>UPDATED <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time></span>}</div>
         </header>
-        {heroImage && <div class="article-hero"><img src={heroImage} alt={title} fetchpriority="high" /></div>}
+        {heroImage && <div class="article-hero"><img src={heroImage} alt={heroImageAlt || title} fetchpriority="high" /></div>}
         <div class="article-body"><slot /></div>
         <div class="article-end"><span class="eyebrow">MORE IDEAS FOR A CONSIDERED HOME</span><a class="underlined-link" href="/blog/">BACK TO THE JOURNAL</a></div>
       </article>
-      <section class="article-finds"><p class="eyebrow light-text">CHOSEN WITH INTENTION</p><h2>Find the details that<br /><em>bring it home.</em></h2><p>Explore thoughtful furniture, lighting, and finishing touches in Curated Finds.</p><a class="button button-outline" href="/curated-finds/">EXPLORE CURATED FINDS</a></section>
     </main>
     <WestmontFooter />
   </body>
