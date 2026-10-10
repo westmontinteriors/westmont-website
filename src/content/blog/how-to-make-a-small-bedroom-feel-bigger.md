@@ -6,6 +6,8 @@ heroImage: "/images/small-bedroom-hero.webp"
 heroImageAlt: "A compact bedroom with a dark walnut bed and nightstands, cream bedding, olive accents, warm bedside lamps, and tall curtains beside the window."
 ---
 
+<p class="article-affiliate-disclosure">WESTMONT may earn a commission if you buy through links in this article.</p>
+
 A small bedroom can feel generous in the ways that matter: somewhere to move comfortably, put down a book, and settle into bed without negotiating a collection of obstacles. You can often get there with the furniture you already own.
 
 Before deciding that the bed is too dark or the dresser too substantial, look at what surrounds them. A crowded doorway, curtains covering the daylight, and several competing bedding patterns can make familiar pieces feel heavier than they are. Start with the layout, then simplify the room's largest surfaces. The aim is a comfortable bedroom with a little more breathing room.
@@ -70,7 +72,7 @@ If there is space beneath the bed, measure it before adding storage. Check that 
 
 ## Choose one finishing gesture
 
-A single artwork, an existing mirror, or a small arrangement of favorite objects can give the room a focal point. Choose the one that adds most, then let some wall remain visible around it.
+A single artwork, an existing mirror, or a small arrangement of favorite objects can give the room a focal point. Choose the one that adds most, then let some wall remain visible around it. If you want that one accent to be a mirror, <a href="https://www.anrdoezrs.net/click-101900599-15736219?sid=wm_smallbed_mirror_01&amp;url=https%3A%2F%2Fwww.homary.com%2Fitem%2F60cm-x-60cm-large-round-gold-mirror-52729.html" rel="sponsored nofollow noopener noreferrer" target="_blank">Homary’s 23.6-inch round gold mirror</a> has a decorative overlapping-ring frame that can sit comfortably with warm wood, provided you leave the surrounding wall uncluttered.
 
 If you use a mirror, check its reflection from the doorway and the bed. A view of the window or a calm corner is more helpful than a reflection of laundry and cables. Secure it according to its weight, fixing instructions, and wall type rather than leaving a heavy mirror casually propped in a narrow route.
 

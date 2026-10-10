@@ -6,6 +6,8 @@ heroImage: "/images/how-to-make-a-neutral-living-room-feel-warm.webp"
 heroImageAlt: "Gray sofa with an olive cushion, a cream throw, a walnut coffee table, textured neutral curtains and warm ambient lamplight in a living room."
 ---
 
+<p class="article-affiliate-disclosure">WESTMONT may earn a commission if you buy through links in this article.</p>
+
 A neutral living room can have a comfortable sofa, a good rug, and freshly painted walls and still feel a little unwelcoming. Perhaps every surface is the same pale shade. Perhaps the gray upholstery looks colder beside a new cream cushion. Or perhaps the room looks lovely from the doorway, but there is nowhere comfortable to settle with a book.
 
 Before adding anything, spend a few minutes in the room. Sit where you usually sit. Notice what feels awkward, what looks flat, and whether the feeling changes after dark. That small diagnosis will help you make a neutral living room feel warm and inviting with fewer purchases and more of the pieces you already own.
@@ -46,7 +48,7 @@ A welcoming living room should make it obvious where to sit and easy to stay the
 
 Try turning an occasional chair toward the sofa or bringing it a little closer. Keep the route through the room clear and walk it as you normally would, including with a laundry basket or while helping someone move around. In a smaller room, a chair may work better at a slight angle than pulled far into the space.
 
-Then check each seat for practical comfort. Can you put down a cup without leaning awkwardly? Can you reach a lamp? Is there somewhere for the book or glasses you keep using? Swap existing side tables around before deciding you need another one.
+Then check each seat for practical comfort. Can you put down a cup without leaning awkwardly? Can you reach a lamp? Is there somewhere for the book or glasses you keep using? Swap existing side tables around before deciding you need another one. If a seat still needs a small perch for a cup, <a href="https://www.dpbolvw.net/click-101900599-15736219?sid=wm_neutral_drinktable_01&amp;url=https%3A%2F%2Fwww.homary.com%2Fitem%2F9-round-walnut-mid-century-drink-table-50152.html" rel="sponsored nofollow noopener noreferrer" target="_blank">Homary’s walnut-veneer drink table</a> brings a deeper wood tone into the arrangement and a compact 9-inch top.
 
 Let useful possessions remain visible. A well-used book, a family photograph, or a piece of pottery with personal meaning can make a restrained palette feel like your home. Group things where they belong in daily life. A blanket tucked into a basket beside the sofa is more inviting when it is easy to reach and pleasant to use.
 
