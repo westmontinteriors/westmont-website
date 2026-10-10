@@ -59,13 +59,11 @@ content:
         type: text
         required: true
       - name: image
-        label: Product image
+        label: Product image (optional)
         type: image
-        required: true
       - name: imageAlt
         label: Image description
         type: string
-        required: true
       - name: category
         label: Category
         type: select
