@@ -4,11 +4,22 @@ import Seo from '../../components/Seo.astro';
 import { getCollection } from 'astro:content';
 import { STARTER_POSTS } from '../../consts';
 const posts = (await getCollection('blog')).filter(post => !STARTER_POSTS.has(post.id)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-const upcoming = [
-  { category: 'DESIGN NOTES', title: 'The art of a timeless, collected home', description: 'A thoughtful approach to rooms that feel personal, layered, and quietly refined.', image: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85', alt: 'Warm modern interior with natural materials' },
-  { category: 'THE AFFORDABLE EDIT', title: 'Elevated details, approachable budgets', description: 'Small changes, considered finds, and finishing touches that make a room feel complete.', image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=85', alt: 'Neutral living room with layered textures' },
-  { category: 'ROOM BY ROOM', title: 'A softer place to land', description: 'Warm neutrals and simple layers for a bedroom that feels like a retreat.', image: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1200&q=85', alt: 'Inviting bedroom with neutral bedding' },
+const categories = [
+  { id: 'all', label: 'All' },
+  { id: 'living-rooms', label: 'Living Rooms' },
+  { id: 'bedrooms', label: 'Bedrooms' },
+  { id: 'styling-guides', label: 'Styling Guides' },
 ];
+const editorial: Record<string, { category: string; summary: string }> = {
+  'how-to-make-a-small-bedroom-feel-bigger': { category: 'bedrooms', summary: 'A little more breathing room, using the furniture you already own.' },
+  'how-to-choose-the-right-rug-size-for-your-living-room': { category: 'living-rooms', summary: 'Simple measurements and three layouts for a room that feels connected.' },
+  'how-to-hang-curtains-to-make-your-room-look-taller': { category: 'styling-guides', summary: 'The right height, width, and finishing details for a graceful frame.' },
+  'how-to-make-your-bedroom-feel-like-a-boutique-hotel': { category: 'bedrooms', summary: 'Inviting layers and thoughtful touches for your everyday retreat.' },
+  'how-to-make-a-neutral-living-room-feel-warm': { category: 'living-rooms', summary: 'Bring warmth to quiet colours with texture, wood, and softer light.' },
+  'how-to-make-your-home-look-expensive': { category: 'styling-guides', summary: 'Considered changes that make a home feel beautifully put together.' },
+};
+const starter = posts.find(post => post.id === 'how-to-make-your-home-look-expensive');
+
 ---
 <!doctype html>
 <html lang="en">
@@ -54,15 +65,60 @@ const upcoming = [
       <section class="journal-intro">
         <p class="eyebrow">NOTES FROM WESTMONT</p>
         <h1>The <em>journal.</em></h1>
-        <p class="journal-deck">Ideas for a more considered home.</p>
-        <p class="journal-description">Inspiring rooms, enduring design ideas, and attainable finds. A place to discover the details that make everyday living feel a little more extraordinary.</p>
+        <p class="journal-deck">Thoughtful ideas for a home that feels like you.</p>
       </section>
-      <section class="journal-feature" aria-labelledby="feature-title">
-        <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1600&q=85" alt="Living room with warm neutral furnishings and natural textures" fetchpriority="high" />
-        <div class="feature-copy"><p class="eyebrow">THE WESTMONT POINT OF VIEW</p><h2 id="feature-title">Beautiful spaces.<br /><em>Thoughtful choices.</em></h2><p>A luxurious home begins with intention. The proportions, the textures, the pieces you choose to keep. Our journal explores how to bring that feeling home, at a price that feels within reach.</p><a class="underlined-link" href="/about/">OUR APPROACH</a></div>
+      <section class="journal-stories" aria-labelledby="latest-title">
+        <div class="browse-bar">
+          <nav class="category-tabs" aria-label="Browse stories by category">
+            {categories.map(category => <a href={category.id === 'all' ? '/blog/' : `/blog/?category=${category.id}`} data-filter={category.id} aria-current={category.id === 'all' ? 'true' : undefined}>{category.label}</a>)}
+          </nav>
+          <p id="story-count" aria-live="polite" aria-atomic="true">{posts.length} stories</p>
+        </div>
+        {starter && <aside class="start-here" aria-label="Start here">
+          <a href={`/blog/${starter.id}/`}>
+            <img src={starter.data.heroImage} alt="" width="112" height="88" />
+            <div><p class="eyebrow">START HERE</p><h2>A more elevated home, <em>within reach.</em></h2><p class="starter-description">Our guide to making your home look expensive without overspending.</p></div>
+          </a>
+        </aside>}
+        <h2 id="latest-title" class="stories-title">Latest <em>stories.</em></h2>
+        <div class="story-grid">
+          {posts.map((post, index) => {
+            const info = editorial[post.id] || { category: 'styling-guides', summary: post.data.description };
+            return <article class="story" data-category={info.category}>
+              <a href={`/blog/${post.id}/`}>
+                {post.data.heroImage && <img src={post.data.heroImage} alt={post.data.heroImageAlt || post.data.title} loading={index < 3 ? 'eager' : 'lazy'} width="640" height="400" />}
+                <div class="story-copy"><p class="eyebrow">{categories.find(category => category.id === info.category)?.label}</p><h3>{post.data.title}</h3><p class="story-summary">{info.summary}</p><span class="story-read">READ THE STORY <span aria-hidden="true">↗</span></span></div>
+              </a>
+            </article>;
+          })}
+        </div>
       </section>
-      {posts.length > 0 && <section class="journal-stories" aria-labelledby="latest-title"><div class="section-heading"><div><p class="eyebrow">FRESH PERSPECTIVES</p><h2 id="latest-title">Latest <em>stories.</em></h2></div></div><div class="story-grid">{posts.map(post => <article class="story"><a href={`/blog/${post.id}/`}>{post.data.heroImage && <img src={post.data.heroImage} alt={post.data.heroImageAlt || post.data.title} loading="lazy" />}<p class="eyebrow">THE JOURNAL · <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</time></p><h3>{post.data.title}</h3><p>{post.data.description}</p><span class="underlined-link">READ THE STORY</span></a></article>)}</div></section>}
-      {posts.length === 0 && <section class="journal-stories" aria-labelledby="upcoming-title"><div class="section-heading"><div><p class="eyebrow">A FIRST LOOK</p><h2 id="upcoming-title">On the <em>horizon.</em></h2></div><span class="side-label">OUR FIRST STORIES ARE COMING SOON</span></div><div class="story-grid">{upcoming.map(story => <article class="story"><img src={story.image} alt={story.alt} loading="lazy" /><p class="eyebrow">{story.category}</p><h3>{story.title}</h3><p>{story.description}</p><span class="coming-soon">COMING SOON</span></article>)}</div></section>}
+      <script>
+        const filters = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-filter]'));
+        const stories = Array.from(document.querySelectorAll<HTMLElement>('.story[data-category]'));
+        const count = document.querySelector('#story-count');
+        const title = document.querySelector('#latest-title');
+        function applyCategory() {
+          const requested = new URL(window.location.href).searchParams.get('category') || 'all';
+          const category = filters.some(filter => filter.dataset.filter === requested) ? requested : 'all';
+          filters.forEach(filter => {
+            if (filter.dataset.filter === category) filter.setAttribute('aria-current', 'true');
+            else filter.removeAttribute('aria-current');
+          });
+          stories.forEach(story => { story.hidden = category !== 'all' && story.dataset.category !== category; });
+          const visible = stories.filter(story => !story.hidden).length;
+          if (count) count.textContent = `${visible} ${visible === 1 ? 'story' : 'stories'}`;
+          if (title) title.textContent = category === 'all' ? 'Latest stories.' : `${filters.find(filter => filter.dataset.filter === category)?.textContent}.`;
+        }
+        filters.forEach(filter => filter.addEventListener('click', event => {
+          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+          event.preventDefault();
+          if (window.location.href !== filter.href) window.history.pushState({}, '', filter.href);
+          applyCategory();
+        }));
+        window.addEventListener('popstate', applyCategory);
+        applyCategory();
+      </script>
       <section class="journal-note"><p class="eyebrow light-text">LUXURY IS A FEELING</p><h2>A home that feels like <em>you.</em></h2><p>Less about following every trend. More about finding what belongs.</p><a class="button button-outline" href="/#spaces">EXPLORE THE SPACES</a></section>
       <section class="newsletter"><div><p class="eyebrow">THE WESTMONT LETTER</p><h2>A little more <em>inspiration.</em></h2><p>Our newsletter is coming soon. In the meantime, we'd love to hear what's inspiring you.</p></div><a class="button button-dark" href="mailto:hello@westmontinteriors.com?subject=Westmont%20inquiry">GET IN TOUCH</a></section>
     </main>
@@ -80,7 +136,8 @@ const upcoming = [
 
 <style is:global>
 .header nav a[aria-current="page"]::after{width:100%}
-.journal-page{width:100%;max-width:none;padding:0;margin:0}.journal-intro{text-align:center;padding:86px 6% 72px}.journal-intro h1{font-size:clamp(68px,8vw,110px);line-height:1.1;letter-spacing:-.045em;margin-bottom:26px}.journal-deck{font-family:'Playfair Display',Georgia,serif;font-size:26px;margin-bottom:18px}.journal-description{max-width:600px;margin:0 auto;color:#74796f;font-size:15px;line-height:1.9}.journal-feature{display:grid;grid-template-columns:1.1fr 1fr;max-width:1320px;margin:0 auto 40px;padding:0 6%}.journal-feature>img{height:100%;min-height:490px;object-fit:cover}.feature-copy{background:#e9e9e2;padding:65px 12%;display:flex;flex-direction:column;align-items:flex-start;justify-content:center}.feature-copy h2{font-size:clamp(38px,4vw,60px);line-height:1.2;letter-spacing:-.035em;margin-bottom:24px}.feature-copy>p:not(.eyebrow){font-size:14px;color:#72786e;line-height:1.9;margin-bottom:26px}.journal-stories{max-width:1320px;margin:auto;padding:65px 6% 90px}.story-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}.story img{aspect-ratio:4/5;object-fit:cover;margin-bottom:25px}.story .eyebrow{font-size:9px;margin-bottom:14px}.story h3{font-size:29px;line-height:1.3;margin-bottom:15px}.story p:not(.eyebrow){font-size:14px;line-height:1.8;color:#74796f}.coming-soon{display:inline-block;font-size:9px;letter-spacing:.18em;border-top:1px solid #d8dacf;padding-top:16px;margin-top:5px;color:#777f70}.story a:hover h3{color:#777f70}.journal-note{text-align:center;background:#30372e;color:#f7f5f0;padding:85px 7%}.journal-note h2{font-size:clamp(38px,5vw,62px);line-height:1.2;margin-bottom:20px}.journal-note>p:not(.eyebrow){color:#d4d8cf;font-size:14px;line-height:1.8;margin-bottom:30px}a:focus-visible,summary:focus-visible{outline:2px solid #777f70;outline-offset:5px}@media(max-width:950px){.journal-feature{grid-template-columns:1fr 1fr}.feature-copy{padding:40px 10%}.journal-feature>img{min-height:430px}.story-grid{gap:20px}.story h3{font-size:25px}}@media(max-width:650px){.journal-intro{padding:60px 7% 48px}.journal-deck{font-size:23px}.journal-feature{grid-template-columns:1fr;padding:0 7%;margin-bottom:0}.journal-feature>img{min-height:0;height:auto;aspect-ratio:4/3}.feature-copy{padding:38px 9% 44px}.journal-stories{padding:55px 7% 65px}.story-grid{grid-template-columns:1fr;gap:42px}.story img{aspect-ratio:4/3}.story h3{font-size:30px}.journal-note{padding:65px 7%}}
+.journal-page{width:100%;margin:0}.journal-intro{text-align:center;padding:38px 6% 34px;border-top:1px solid #e5e5db}.journal-intro .eyebrow{margin-bottom:13px}.journal-intro h1{font-size:clamp(56px,6vw,78px);line-height:1.1;letter-spacing:-.045em;margin-bottom:14px}.journal-deck{font-size:14px;line-height:1.7;color:#62695d;margin:0}.journal-stories{max-width:1320px;margin:auto;padding:0 6% 64px}.browse-bar{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #d9dccf;border-bottom:1px solid #d9dccf;gap:20px}.category-tabs{display:flex;gap:28px}.category-tabs a{padding:19px 0 17px;font-size:12px;line-height:1.5;color:#62695d;border-bottom:2px solid transparent;white-space:nowrap}.category-tabs a[aria-current]{color:#30372e;border-color:#30372e;font-weight:700}.category-tabs a:hover{color:#30372e}.browse-bar>p{font-size:11px;color:#62695d;margin:0;white-space:nowrap}.start-here{background:#eaece3;margin:22px 0 28px}.start-here>a{display:flex;gap:23px;align-items:center;padding:16px 22px 16px 16px}.start-here img{width:112px;height:88px;flex:none}.start-here .eyebrow{font-size:9px;color:#59634f;margin-bottom:7px}.start-here h2{font-size:26px;letter-spacing:-.02em;margin-bottom:7px;line-height:1.2}.starter-description{font-size:12px;line-height:1.5;color:#62695d;margin-bottom:0}.stories-title{font-size:28px;letter-spacing:-.025em;margin-bottom:22px}.story-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px 26px}.story[hidden]{display:none}.story img{aspect-ratio:1.7;height:auto;object-fit:cover;margin-bottom:17px}.story .eyebrow{font-size:9px;letter-spacing:.17em;color:#626c58;text-transform:uppercase;margin-bottom:9px}.story h3{font-size:23px;letter-spacing:-.025em;line-height:1.3;margin-bottom:10px}.story-summary{font-size:12px;line-height:1.7;color:#62695d;margin-bottom:14px}.story-read{font-size:9px;letter-spacing:.13em;display:inline-flex;gap:18px;border-bottom:1px solid #a3aa98;padding-bottom:6px}.story a:hover h3,.start-here a:hover h2{color:#626c58}.journal-note{text-align:center;background:#30372e;color:#f7f5f0;padding:65px 7%}.journal-note h2{font-size:clamp(38px,5vw,62px);line-height:1.2;margin-bottom:20px}.journal-note>p:not(.eyebrow){color:#d4d8cf;font-size:14px;line-height:1.8;margin-bottom:30px}@media(max-width:950px){.story-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.category-tabs{gap:22px}}@media(max-width:650px){.journal-intro{padding:25px 6% 26px}.journal-intro .eyebrow{font-size:8px;margin-bottom:12px}.journal-intro h1{font-size:56px;margin-bottom:12px}.journal-deck{max-width:260px;margin:auto;font-size:13px;line-height:1.6}.journal-stories{padding:0 6% 40px}.browse-bar{display:block}.category-tabs{justify-content:space-between;gap:8px}.category-tabs a{font-size:11px;padding:16px 0 14px;letter-spacing:0}.browse-bar>p{display:none}.start-here{margin:17px 0 23px}.start-here>a{padding:13px;gap:13px}.start-here img{width:62px;height:76px}.start-here .eyebrow{font-size:8px;margin-bottom:6px}.start-here h2{font-size:20px;line-height:1.25;margin:0}.starter-description{display:none}.stories-title{font-size:25px;margin-bottom:8px}.story-grid{display:block}.story{border-bottom:1px solid #d9dccf;padding:18px 0}.story>a{display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;align-items:start}.story img{width:96px;height:116px;aspect-ratio:auto;margin:0}.story .eyebrow{font-size:8px;letter-spacing:.11em;margin:0 0 6px}.story h3{font-size:19px;line-height:1.28;letter-spacing:-.025em;margin:0 0 7px}.story-summary{font-size:11px;line-height:1.6;margin-bottom:0}.story-read{display:none}.journal-note{padding:50px 7%}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
 </style>
 
 <style is:global>
